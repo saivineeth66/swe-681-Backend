@@ -117,7 +117,7 @@ public class ScryptHash
 	 */
 	private void init()
 	{
-		costFactor = 16384*11;
+		costFactor = 16384<<3;
 		int blockSizeFactor = 8;
 		parallelizationFactor = 3;
 		blockSize = 128* blockSizeFactor *parallelizationFactor;
