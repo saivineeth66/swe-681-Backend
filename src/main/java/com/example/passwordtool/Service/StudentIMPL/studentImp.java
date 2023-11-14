@@ -18,7 +18,7 @@ public class studentImp implements StudentService {
 
     @Override
     public String addStudent(StudentDTO studentDTO) {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        ScryptHash scryptHash;
         Student findstudent = studentRepo.findByUsername(studentDTO.getUsername());
         if (findstudent != null) {
 
@@ -26,14 +26,16 @@ public class studentImp implements StudentService {
         }
         Student student = new Student();
         student.setUsername(studentDTO.getUsername());
-
-        String encoded = bCryptPasswordEncoder.encode(studentDTO.getPassword());
+        // Init object to get encrypted password
+        scryptHash = new ScryptHash(student.getUsername(),student.getPassword());
+        // Sets the salt hash value
+        student.setHash(scryptHash.getStringRandomSalt());
+        // gets the encrypted password
+        String encoded = scryptHash.getEncryptedPassphrase();
         System.out.println("Encoded Password: " + encoded);
         student.setPassword(encoded);
 
-
         studentRepo.save(student);
-
 
         return student.getUsername();
     }
@@ -42,8 +44,8 @@ public class studentImp implements StudentService {
     public boolean signIn(String username, String password) {
         Student student = studentRepo.findByUsername(username);
         if (student != null) {
-            BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-            if (bCryptPasswordEncoder.matches(password, student.getPassword())) {
+            ScryptHash scryptHash = new ScryptHash(username,password,student.getHash());
+            if (scryptHash.getEncryptedPassphrase().equals(student.getPassword())) {
                 return true; // Sign-in success
             }
         }
