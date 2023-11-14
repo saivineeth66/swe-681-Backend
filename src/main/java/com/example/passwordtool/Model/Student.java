@@ -24,6 +24,4 @@ public class Student {
     @Setter
     private String password;
 
-
-
 }
