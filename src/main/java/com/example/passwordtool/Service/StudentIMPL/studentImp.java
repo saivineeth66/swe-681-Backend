@@ -31,7 +31,7 @@ public class studentImp implements StudentService {
         // Sets the salt hash value
         student.setHash(scryptHash.getStringRandomSalt());
         // gets the encrypted password
-        String encoded = scryptHash.getEncryptedPassphrase();
+        String encoded = scryptHash.getEncryptedPassphrase().substring(0,64);
         System.out.println("Encoded Password: " + encoded);
         student.setPassword(encoded);
 
@@ -45,7 +45,7 @@ public class studentImp implements StudentService {
         Student student = studentRepo.findByUsername(username);
         if (student != null) {
             ScryptHash scryptHash = new ScryptHash(username,password,student.getHash());
-            if (scryptHash.getEncryptedPassphrase().equals(student.getPassword())) {
+            if (scryptHash.getEncryptedPassphrase().substring(0,64).equals(student.getPassword())) {
                 return true; // Sign-in success
             }
         }
