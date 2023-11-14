@@ -27,7 +27,6 @@ public class StudentController {
             String username = studentService.addStudent(studentDTO);
             return ResponseEntity.ok().body("User created with username: " + username);
         } catch (RuntimeException ex) {
-            // In real scenarios, use @ControllerAdvice to handle exceptions globally
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Cannot create user: " + ex.getMessage());
