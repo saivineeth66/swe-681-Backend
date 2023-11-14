@@ -24,4 +24,7 @@ public class Student {
     @Setter
     private String password;
 
+    @Setter
+    private String hash;
+
 }
