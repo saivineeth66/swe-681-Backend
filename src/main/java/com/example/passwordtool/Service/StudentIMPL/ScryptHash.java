@@ -117,13 +117,12 @@ public class ScryptHash
 	 */
 	private void init()
 	{
-		costFactor = 16384<<11;
+		costFactor = 16384*11;
 		int blockSizeFactor = 8;
 		parallelizationFactor = 3;
 		blockSize = 128* blockSizeFactor *parallelizationFactor;
 		desiredKeyLen = 32;
 	}
-
 
 	/**
 	 * Gets the initial salt using PBKDF2

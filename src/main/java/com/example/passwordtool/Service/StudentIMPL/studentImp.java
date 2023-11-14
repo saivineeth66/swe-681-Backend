@@ -26,10 +26,11 @@ public class studentImp implements StudentService {
         }
         Student student = new Student();
         student.setUsername(studentDTO.getUsername());
+        String password = studentDTO.getPassword();
         // Init object to get encrypted password
-        scryptHash = new ScryptHash(student.getUsername(),student.getPassword());
+        scryptHash = new ScryptHash(student.getUsername(),password);
         // Sets the salt hash value
-        student.setHash(scryptHash.getStringRandomSalt());
+        student.setSalt(scryptHash.getStringRandomSalt());
         // gets the encrypted password
         String encoded = scryptHash.getEncryptedPassphrase().substring(0,64);
         System.out.println("Encoded Password: " + encoded);
@@ -44,7 +45,7 @@ public class studentImp implements StudentService {
     public boolean signIn(String username, String password) {
         Student student = studentRepo.findByUsername(username);
         if (student != null) {
-            ScryptHash scryptHash = new ScryptHash(username,password,student.getHash());
+            ScryptHash scryptHash = new ScryptHash(username,password,student.getSalt());
             if (scryptHash.getEncryptedPassphrase().substring(0,64).equals(student.getPassword())) {
                 return true; // Sign-in success
             }

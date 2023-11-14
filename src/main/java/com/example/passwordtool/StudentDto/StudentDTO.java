@@ -22,14 +22,14 @@ public class StudentDTO {
     private String password;
 
     @Setter
-    private String hash;
+    private String salt;
 
     @Override
     public String toString() {
         return "StudentDTO{" +
                 "studentID=" + studentID +
                 ", username='" + username + '\'' +
-                ", Password='" + password + '\'' +   ", Hash='" + hash + '\'' +
+                ", Password='" + password + '\'' +   ", Hash='" + salt + '\'' +
                 '}';
     }
 }

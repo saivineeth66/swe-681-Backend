@@ -27,9 +27,10 @@ public class DataGenerator
 
 		// Store these values in the database for each of the 10 users
 		for(int i = 0; i< 10; i++){
-			System.out.println(users[i]);
-			System.out.println(encPasswords[i].substring(0,64)); // save only first 64 bytes
-			System.out.println(salts[i]);
+//			System.out.println(users[i]);
+//			System.out.println(encPasswords[i].substring(0,64)); // save only first 64 bytes
+//			System.out.println(salts[i]);
+			System.out.println("INSERT INTO student (username, password, hash) VALUES ('" + users[i] + "', '" + encPasswords[i].substring(0,64) + "', '" + salts[i] + "');");
 		}
 	}
 
