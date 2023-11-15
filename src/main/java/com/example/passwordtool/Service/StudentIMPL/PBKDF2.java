@@ -185,10 +185,10 @@ public class PBKDF2
 	}
 
 	/**
-	 *
-	 * @param a
-	 * @param b
-	 * @return
+	 * Concat's the two arrays
+	 * @param a byte[]
+	 * @param b byte[]
+	 * @return joined array
 	 */
 	private static byte[] concatArrays(byte[] a, byte[] b) {
 		byte[] result = new byte[a.length + b.length];
@@ -196,6 +196,13 @@ public class PBKDF2
 		System.arraycopy(b, 0, result, a.length, b.length);
 		return result;
 	}
+
+	/**
+	 * Divides the two arrays
+	 * @param source byte[]
+	 * @param chunksize byte[]
+	 * @return 2D divided array
+	 */
 	public static byte[][] divideArray(byte[] source, int chunksize) {
 	     
         byte[][] ret = new byte[(int)Math.ceil(source.length / (double)chunksize)][chunksize];

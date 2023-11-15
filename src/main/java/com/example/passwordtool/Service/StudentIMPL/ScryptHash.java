@@ -27,52 +27,6 @@ public class ScryptHash
 	private final int hLen = 32; // The length in octets of the hash function (32 for SHA256).
 	private int MFlen; // The length in octets of the output of the mixing function
 
-	// Testing
-	public static void main(String[] args)
-	{
-		ScryptHash scryptHash = new ScryptHash("mshah22","password");
-		//scryptHash.encryptPassword();
-		// Mani: Avoid string->byte[]->string conversion. messes up the values.
-//		String temp = new String(scryptHash.salt);
-		ScryptHash scryptHash2 = new ScryptHash("mshah22","password", scryptHash.getStringRandomSalt()); // Same Salt needs to be passed
-
-//		temp = new String(scryptHash.passHash);
-		String temp = new String(scryptHash.passHash);
-//		String temp2 = new String(scryptHash2.salt);
-		String temp2 = new String(scryptHash2.passHash);
-		if(temp.equals(temp2)) {
-			System.out.println("Yippie ");
-		}else {
-			System.out.println("BOOOO ");
-		}
-	}
-
-	/**
-	 * This is the salt that will be saved to the database.
-	 * @return byte[] salt
-	 */
-	public byte[] getRandomSalt()
-	{
-		return createRandomSalt();
-	}
-	public String getStringRandomSalt()
-	{
-		if(this.salt != null && this.salt.length > 0){
-			return convertToHexString(this.salt);
-		}else{
-			return null;
-		}
-	}
-
-	private void setSalt(byte[] salt)
-	{
-		this.salt = salt;
-	}
-
-	public void setSalt(String hexSalt)
-	{
-		this.salt = convertHexToBytes(hexSalt);
-	}
 
 	/**
 	 * Main Constructor. Use this for a new "user" so to speak
@@ -97,20 +51,60 @@ public class ScryptHash
 	 * We use this when we already have the salt defined in the database
 	 * @param username username
 	 * @param plainTextPassword password in plaintext
-	 * @param saltHex salt used to create expensive salt
+	 * @param saltHexString salt used to create expensive salt
 	 */
-	public ScryptHash(String username, String plainTextPassword, String saltHex)
+	public ScryptHash(String username, String plainTextPassword, String saltHexString)
 	{
 		this.orgPass = plainTextPassword;
 		this.username = username;
 		this.passphrase = plainTextPassword.getBytes();
 		init();
-		setSalt(saltHex); // reset this so that it uses the parameter byte[] instead
+		setSalt(saltHexString); // reset this so that it uses the parameter byte[] instead
 		long start=System.currentTimeMillis();
 		encryptPassword();
 		long end=System.currentTimeMillis();
 		System.out.println("Time:"+(end-start));
 	}
+	/**
+	 * Creates random salt thats used for PBKDF2
+	 * @return byte[] salt
+	 */
+	public byte[] getRandomSalt()
+	{
+		return createRandomSalt();
+	}
+
+	/**
+	 * String version of the salt in hex
+	 * @return String Salt
+	 */
+	public String getStringRandomSalt()
+	{
+		if(this.salt != null && this.salt.length > 0){
+			return convertToHexString(this.salt);
+		}else{
+			return null;
+		}
+	}
+
+	/**
+	 * Sets the salt[]
+	 * @param salt byte[]
+	 */
+	private void setSalt(byte[] salt)
+	{
+		this.salt = salt;
+	}
+
+	/**
+	 * Sets the salt based on the hex string
+	 * @param hexSalt String
+	 */
+	public void setSalt(String hexSalt)
+	{
+		this.salt = convertHexToBytes(hexSalt);
+	}
+
 
 	/**
 	 * Inits stuff
@@ -165,8 +159,8 @@ public class ScryptHash
 	}
 
 	/**
-	 *
-	 * @param hash
+	 * Set's the encrypted password in it' final form
+	 * @param hash byte[]
 	 */
 	private void setPassHash(byte[] hash)
 	{
@@ -176,10 +170,10 @@ public class ScryptHash
 	}
 
 	/**
-	 *
-	 * @param passBlocks
-	 * @param saltBlocks
-	 * @return
+	 * Mixes the rows
+	 * @param passBlocks password block byte[]
+	 * @param saltBlocks salt block byte[]
+	 * @return byte[] resulting mix
 	 */
 	private byte[] rowMix(byte[] passBlocks,byte[] saltBlocks) {
 		
@@ -201,9 +195,9 @@ public class ScryptHash
 	}
 
 	/**
-	 *
-	 * @param block1
-	 * @param block2
+	 * Mixes the blocks
+	 * @param block1 byte[]
+	 * @param block2 byte[]
 	 */
 	private void blockMix(byte[] block1, byte[] block2) {
         for (int i = 0; i < parallelizationFactor; i++) {
@@ -212,10 +206,10 @@ public class ScryptHash
     }
 
 	/**
-	 *
-	 * @param block1
-	 * @param block2
-	 * @return
+	 * Performs XOR operation on two blocks
+	 * @param block1 byte[]
+	 * @param block2 byte[]
+	 * @return XOR're byte[]
 	 */
 	private static byte[] xorBlocks(byte[] block1, byte[] block2) {
         byte[] result = new byte[block1.length];
@@ -226,9 +220,9 @@ public class ScryptHash
     }
 
 	/**
-	 *
-	 * @param derivedKey
-	 * @return
+	 * Converts byte[] to hex string
+	 * @param derivedKey byte[]
+	 * @return Hex String
 	 */
 	private static String convertToHexString(byte[] derivedKey)
 	{
@@ -239,6 +233,11 @@ public class ScryptHash
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * Converts Hex string to byte[]
+	 * @param hexString String
+	 * @return byte[]
+	 */
 	private static byte[] convertHexToBytes(String hexString)
 	{
 		int length = hexString.length();
@@ -265,8 +264,8 @@ public class ScryptHash
 	}
 
 	/**
-	 *
-	 * @return
+	 * Returns the final encrypted password
+	 * @return Encrypted Password
 	 */
 	public String getEncryptedPassphrase()
 	{
